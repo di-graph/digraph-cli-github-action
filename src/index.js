@@ -112,7 +112,7 @@ async function setup() {
         let pathToCLI = await tc.extractTar(pathToTarball);
         core.info(`extracted pathToCLI is ${pathToCLI}`)
 
-        pathToCLI = path.join(pathToCLI, `digraph-${version}`);
+        pathToCLI = path.join(pathToCLI, `digraph-cli-${version}`);
         
         await renameBinary(pathToCLI, download.binaryName);
         
