@@ -1,0 +1,14 @@
+name: "Digraph CLI Setup Github Action"
+description: Sets up Digraph config validator CLI in your GitHub Actions workflow.
+inputs:
+  version:
+    description: Version of Digraph CLI to install.
+    required: false
+    default: 0.0.x
+  github-token:
+    description: 'The GitHub access token (e.g. secrets.GITHUB_TOKEN) used to get the list of digraph-cli CLI versions. This defaults to {{ github.token }}.'
+    default: '${{ github.token }}'
+    required: false
+runs:
+  using: 'node16'
+  main: 'src/index.js'
