@@ -31,8 +31,8 @@ function getDownloadObject(version){
     path = `releases/latest/download`;
   }
   const platform = os.platform();
-  const filename = `digraph-cli-${mapOS(platform)}-${mapArch(os.arch())}`;
-  const binaryName = platform === 'win32' ? 'digraph-cli.exe' : filename;
+  const filename = `digraph-${mapOS(platform)}-${mapArch(os.arch())}`;
+  const binaryName = platform === 'win32' ? 'digraph.exe' : filename;
   const url = `https://github.com/di-graph/digraph-cli/${path}/${filename}.tar.gz`;
   
   return {
@@ -48,7 +48,7 @@ async function renameBinary(
 ){
   if (!binaryName.endsWith('.exe')) {
     const source = path.join(pathToCLI, binaryName);
-    const target = path.join(pathToCLI, 'digraph-cli');
+    const target = path.join(pathToCLI, 'digraph');
     core.debug(`Moving ${source} to ${target}.`);
     try {
       await io.mv(source, target);
