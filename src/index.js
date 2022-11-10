@@ -26,24 +26,29 @@ function mapOS(os) {
 }
 
 function getDownloadObject(version){
+  let path = `releases/download/v${version}`;
+  if (version === 'latest') {
+    path = `releases/latest/download`;
+  }
   const platform = os.platform();
-  const filename = `digraph-${mapOS(platform)}-${mapArch(os.arch())}`;
-  const binaryName = platform === 'win32' ? 'digraph.exe' : filename;
-  const url = `https://github.com/di-graph/digraph-cli/archive/refs/tags/v${version}.tar.gz`;
+  const filename = `digraph-cli-${mapOS(platform)}-${mapArch(os.arch())}`;
+  const binaryName = platform === 'win32' ? 'digraph-cli.exe' : filename;
+  const url = `https://github.com/di-graph/digraph-cli/${path}/${filename}.tar.gz`;
+  
   return {
     url,
     binaryName,
   };
 }
 
-// Rename digraph-<platform>-<arch> to digraph
+// Rename digraph-cli-<platform>-<arch> to digraph-cli
 async function renameBinary(
   pathToCLI,
   binaryName
 ){
   if (!binaryName.endsWith('.exe')) {
     const source = path.join(pathToCLI, binaryName);
-    const target = path.join(pathToCLI, 'digraph');
+    const target = path.join(pathToCLI, 'digraph-cli');
     core.debug(`Moving ${source} to ${target}.`);
     try {
       await io.mv(source, target);
@@ -97,8 +102,8 @@ async function setup() {
     try {
         const platform = os.platform();
         const arch = os.arch();
-        core.info(`platform is ${platform}`)
-        core.info(`arch is ${arch}`)
+        // core.info(`platform is ${platform}`)
+        // core.info(`arch is ${arch}`)
         // Download the specific version of the tool, e.g. as a tarball/zipball
         const version = await getVersion();
 
@@ -106,35 +111,40 @@ async function setup() {
         core.info(`url is ${download.url}`)
     
         const pathToTarball = await tc.downloadTool(download.url);
-        core.info(`path to tarball is ${pathToTarball}`)
+        // core.info(`path to tarball is ${pathToTarball}`)
 
         // Extract the tarball onto host runner
         let pathToCLI = await tc.extractTar(pathToTarball);
-        core.info(`extracted pathToCLI is ${pathToCLI}`)
+        // core.info(`extracted pathToCLI is ${pathToCLI}`)
 
-        pathToCLI = path.join(pathToCLI, `digraph-cli-${version}`);
+        // pathToCLI = path.join(pathToCLI, `digraph-cli-${version}`);
         
         await renameBinary(pathToCLI, download.binaryName);
         
-        fs.readdir(pathToCLI, function (err, files) {
-          //handling error
-          if (err) {
-              return core.setFailed('Unable to scan directory: ' + err);
-          } 
-          //listing all files using forEach
-          files.forEach(function (file) {
-              // Do whatever you want to do with the file
-              core.info(file); 
-          });
-          // Expose the tool by adding it to the PATH
-          core.addPath(pathToCLI);
+      //   fs.readdir(pathToCLI, function (err, files) {
+      //     //handling error
+      //     if (err) {
+      //         return core.setFailed('Unable to scan directory: ' + err);
+      //     } 
+      //     //listing all files using forEach
+      //     files.forEach(function (file) {
+      //         // Do whatever you want to do with the file
+      //         core.info(file); 
+      //     });
+      //     // Expose the tool by adding it to the PATH
+      //     core.addPath(pathToCLI);
 
-          core.info(`pathToCLI is ${pathToCLI}`)
+      //     core.info(`pathToCLI is ${pathToCLI}`)
 
-          core.info(`Setup Digraph CLI`);
+      //     core.info(`Setup Digraph CLI`);
 
 
-      });
+      // });
+        core.addPath(pathToCLI);
+
+        // core.info(`pathToCLI is ${pathToCLI}`)
+
+        core.info(`Setup Digraph CLI`);
     } catch (e) {
         core.setFailed(e);
       }
